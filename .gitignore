@@ -1,0 +1,25 @@
+# Python
+nanonis_labbook/__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Package / install artefacts
+*.egg-info/
+*.egg
+dist/
+build/
+.eggs/
+
+# Editable install pointer
+__editable__*
+
+# Environment
+.env
+.venv
+env/
+venv/
+
+# OS
+.DS_Store
+Thumbs.db
