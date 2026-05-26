@@ -21,7 +21,7 @@ Supported measurement types:
 Clone the repository and install with pip:
 
 ```bash
-git clone https://github.com/your-username/nanonis-labbook.git
+git clone https://github.com/benlowe12/nanonis-labbook.git
 cd nanonis-labbook
 pip install .
 ```
