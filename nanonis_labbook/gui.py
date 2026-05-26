@@ -19,7 +19,7 @@ from .sxm_measurements import (
 from .dat_measurements import (
     save_dat_didv_spectrum, save_dat_z_spectrum, save_dat_kpfm,
 )
-from .combined_measurements import save_nc_measurement, save_kpfm_z_set
+from .combined_measurements import save_nc_measurement, save_kpfm_z_set, save_dat_compare_spectra
 from .clipboard import paste_image_into_app
 
 
@@ -64,6 +64,8 @@ class LabbookApp:
 
         tk.Button(button_frame, text="Choose file(s) to paste", width=32,
                   command=self.run_choose_files).pack(pady=2)
+        tk.Button(button_frame, text="Compare spectra", width=32,
+                  command=self.run_compare_spectra).pack(pady=2)
 
         self.status = tk.Label(root, text="", fg="green")
         self.status.pack(pady=5)
@@ -263,6 +265,76 @@ class LabbookApp:
                 "Error",
                 f"Something went wrong:\n{e}\n\n{traceback.format_exc()}"
             )
+
+    # -------------------------------------------------------------------------
+    # Compare spectra
+    # -------------------------------------------------------------------------
+
+    def run_compare_spectra(self):
+        """Handler for the Compare spectra button."""
+        try:
+            folder = self.folder.get()
+            if not folder:
+                messagebox.showerror("Error", "Please select a folder first.")
+                return
+
+            labbook_folder = os.path.join(folder, "labbook")
+            os.makedirs(labbook_folder, exist_ok=True)
+
+            # Step 1: measurement type
+            spec_type = self.prompt_compare_type()
+            if not spec_type:
+                messagebox.showinfo("Cancelled", "No measurement type selected.")
+                return
+
+            # Step 2: select multiple DAT files
+            files = filedialog.askopenfilenames(
+                title="Select DAT files to compare",
+                filetypes=[("DAT files", "*.dat"), ("All files", "*.*")],
+            )
+            if not files:
+                messagebox.showinfo("Cancelled", "No files selected.")
+                return
+
+            img = save_dat_compare_spectra(list(files), labbook_folder, spec_type)
+
+            time.sleep(1)
+            paste_image_into_app(img)
+            os.remove(img)
+
+        except Exception as e:
+            import traceback
+            messagebox.showerror(
+                "Error",
+                f"Something went wrong:\n{e}\n\n{traceback.format_exc()}"
+            )
+
+    def prompt_compare_type(self):
+        """Dialog to select which spectroscopy type to compare."""
+        dialog = tk.Toplevel(self.root)
+        dialog.title("Compare: select type")
+        dialog.grab_set()
+
+        tk.Label(dialog, text="Measurement type to compare?", font=("Arial", 12)).pack(pady=10)
+
+        choice = tk.StringVar(value="")
+
+        def select(option):
+            choice.set(option)
+            dialog.destroy()
+
+        options = [
+            ("dI/dV spectrum", "didv_spectrum"),
+            ("Z spectrum",     "z_spectrum"),
+            ("KPFM",           "kpfm"),
+        ]
+        for label, key in options:
+            tk.Button(dialog, text=label, width=25,
+                      command=lambda k=key: select(k)).pack(pady=3)
+
+        tk.Frame(dialog, height=4).pack()
+        self.root.wait_window(dialog)
+        return choice.get()
 
     # -------------------------------------------------------------------------
     # Main dispatcher

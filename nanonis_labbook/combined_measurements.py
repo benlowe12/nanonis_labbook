@@ -260,3 +260,84 @@ def save_kpfm_z_set(files_path_list, labbook_folder):
     plt.close()
 
     return img_path
+
+
+# -----------------------------------------------------------------------------
+# Compare spectra — multiple DAT files on the same axes
+# -----------------------------------------------------------------------------
+
+def save_dat_compare_spectra(file_paths_dat, labbook_folder, spec_type):
+    """Plot multiple DAT spectra of the same type on a single axes in viridis colours.
+
+    Parameters
+    ----------
+    file_paths_dat : list of str
+        Paths to the .dat files to compare.
+    labbook_folder : str
+        Destination folder for the output PNG.
+    spec_type : str
+        One of 'didv_spectrum', 'z_spectrum', 'kpfm'.
+    """
+    from .config import (
+        SPEC_BIAS_CHANNEL, SPEC_DIDV_CHANNEL,
+        SPEC_Z_CHANNEL, SPEC_FREQ_SHIFT,
+    )
+
+    # Colour scale
+    no_of_files = len(file_paths_dat)
+    color_array = np.arange(0, no_of_files, 1)
+    coloring_array = np.ndarray.flatten(color_array)
+    colors = plt.cm.viridis(
+        [(xx - np.min(coloring_array)) / (np.max(coloring_array) - np.min(coloring_array))
+         for xx in coloring_array]
+    )
+
+    # Axis labels and signal keys per type
+    type_config = {
+        "didv_spectrum": dict(
+            x_key=SPEC_BIAS_CHANNEL, x_scale=1e3,
+            y_key=SPEC_DIDV_CHANNEL, y_scale=1,
+            xlabel="Bias (mV)", ylabel="dI/dV (arb. units)",
+            title_prefix="dIdV COMPARE",
+        ),
+        "z_spectrum": dict(
+            x_key=SPEC_Z_CHANNEL, x_scale=1e10,
+            y_key=SPEC_FREQ_SHIFT, y_scale=1,
+            xlabel=r"$Z (\mathrm{\AA})$", ylabel=r"$\Delta f$ (Hz)",
+            title_prefix="Z COMPARE",
+        ),
+        "kpfm": dict(
+            x_key=SPEC_BIAS_CHANNEL, x_scale=1,
+            y_key=SPEC_FREQ_SHIFT, y_scale=1,
+            xlabel="Bias (V)", ylabel=r"$\Delta f$ (Hz)",
+            title_prefix="KPFM COMPARE",
+        ),
+    }
+    cfg = type_config[spec_type]
+
+    fig, ax = plt.subplots(figsize=(8, 5))
+
+    basenames = []
+    for i, file_path in enumerate(file_paths_dat):
+        dat_data = nanonispy.read.Spec(file_path)
+        sweep_signal = dat_data.signals[cfg["x_key"]] * cfg["x_scale"]
+        y_signal     = dat_data.signals[cfg["y_key"]] * cfg["y_scale"]
+        label = os.path.basename(file_path)
+        basenames.append(label)
+        ax.plot(sweep_signal, y_signal, color=colors[i], label=label)
+
+    header_line = f"{cfg['title_prefix']}: {', '.join(basenames)}"
+    ax.set_title(header_line, fontsize=7)
+    ax.set_xlabel(cfg["xlabel"])
+    ax.set_ylabel(cfg["ylabel"])
+    ax.grid(True)
+
+    date_str = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    img_path = os.path.join(
+        labbook_folder,
+        f"compare_{spec_type}_{date_str}.png"
+    )
+    plt.savefig(img_path, dpi=200, bbox_inches="tight")
+    plt.close()
+
+    return img_path
