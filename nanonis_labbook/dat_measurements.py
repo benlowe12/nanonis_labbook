@@ -31,60 +31,66 @@ def save_dat_generic(file_path_dat, file_path_sxm, labbook_folder,
                      xlabel="Sweep",
                      ylabel="Signal"):
 
-    scan_data = nanonispy.read.Scan(file_path_sxm)
-    header = scan_data.header
-
-    # Select channel for context image
-    if channel is None:
-        channel = list(scan_data.signals.keys())[0]
-    image = scan_data.signals[channel]['forward']
-
-    # Correct scan orientation if scanning top->bottom
-    if header['scan_dir'] == 'down':
-        image = np.flipud(image)
-
-    # Image extent in physical units
-    extent = (
-        header['scan_offset'][0] - header['scan_range'][0] / 2,
-        header['scan_offset'][0] + header['scan_range'][0] / 2,
-        header['scan_offset'][1] - header['scan_range'][1] / 2,
-        header['scan_offset'][1] + header['scan_range'][1] / 2,
-    )
-
-    # Scalebar
-    font_properties = {'size': 14}
-    dx = 1
-    scalebar = ScaleBar(
-        dx=dx, length_fraction=0.3,
-        font_properties=font_properties,
-        frameon=True, box_color='w', box_alpha=0.5,
-        location=3, color='k', sep=1, scale_loc='top',
-    )
-
     base = os.path.basename(file_path_dat)
     date_str = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
     fig, (ax_img, ax_spec) = plt.subplots(1, 2, figsize=(11, 5))
 
-    # Spectrum position marker
-    spec_data = nanonispy.read.Spec(file_path_dat)
-    spec_header = spec_data.header
-    x = float(spec_header['X (m)'])
-    y = float(spec_header['Y (m)'])
+    if file_path_sxm is not None:
+        scan_data = nanonispy.read.Scan(file_path_sxm)
+        header = scan_data.header
 
-    # Adjust for scan angle
-    angle = float(scan_data.header['scan_angle']) * np.pi / 180
-    x -= scan_data.header['scan_offset'][0]
-    y -= scan_data.header['scan_offset'][1]
-    x, y = (np.cos(angle) * x - np.sin(angle) * y,
-             np.sin(angle) * x + np.cos(angle) * y)
-    x += scan_data.header['scan_offset'][0]
-    y += scan_data.header['scan_offset'][1]
+        # Select channel for context image
+        if channel is None:
+            channel = list(scan_data.signals.keys())[0]
+        image = scan_data.signals[channel]['forward']
 
-    # Left panel: SXM context image
-    ax_img.imshow(image, origin='lower', cmap=cmap, extent=extent)
-    ax_img.add_artist(scalebar)
-    ax_img.plot(x, y, 'o', markersize=8, markerfacecolor='r', markeredgecolor='w')
+        # Correct scan orientation if scanning top->bottom
+        if header['scan_dir'] == 'down':
+            image = np.flipud(image)
+
+        # Image extent in physical units
+        extent = (
+            header['scan_offset'][0] - header['scan_range'][0] / 2,
+            header['scan_offset'][0] + header['scan_range'][0] / 2,
+            header['scan_offset'][1] - header['scan_range'][1] / 2,
+            header['scan_offset'][1] + header['scan_range'][1] / 2,
+        )
+
+        # Scalebar
+        font_properties = {'size': 14}
+        dx = 1
+        scalebar = ScaleBar(
+            dx=dx, length_fraction=0.3,
+            font_properties=font_properties,
+            frameon=True, box_color='w', box_alpha=0.5,
+            location=3, color='k', sep=1, scale_loc='top',
+        )
+
+        # Spectrum position marker
+        spec_data = nanonispy.read.Spec(file_path_dat)
+        spec_header = spec_data.header
+        x = float(spec_header['X (m)'])
+        y = float(spec_header['Y (m)'])
+
+        # Adjust for scan angle
+        angle = float(scan_data.header['scan_angle']) * np.pi / 180
+        x -= scan_data.header['scan_offset'][0]
+        y -= scan_data.header['scan_offset'][1]
+        x, y = (np.cos(angle) * x - np.sin(angle) * y,
+                 np.sin(angle) * x + np.cos(angle) * y)
+        x += scan_data.header['scan_offset'][0]
+        y += scan_data.header['scan_offset'][1]
+
+        # Left panel: SXM context image with filename as title
+        ax_img.imshow(image, origin='lower', cmap=cmap, extent=extent)
+        ax_img.add_artist(scalebar)
+        ax_img.plot(x, y, 'o', markersize=8, markerfacecolor='r', markeredgecolor='w')
+        ax_img.set_title(os.path.basename(file_path_sxm), fontsize=8)
+
+    else:
+        ax_img.set_title("Note: no SXM file found", fontsize=8, color="gray")
+
     ax_img.axis("off")
 
     # Right panel: spectrum

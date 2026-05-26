@@ -217,9 +217,9 @@ class LabbookApp:
 
                 channel, cmap = self.image_type_to_channel_and_cmap(ref_type)
 
-                # Combined SXM + DAT file picker
+                # File picker — one DAT required, SXM optional
                 files = filedialog.askopenfilenames(
-                    title="Select one SXM and one DAT file",
+                    title="Select one DAT file (and optionally one SXM file)",
                     filetypes=[("STM files", "*.sxm *.dat"), ("All files", "*.*")],
                 )
                 if not files:
@@ -229,15 +229,22 @@ class LabbookApp:
                 sxm_files = [f for f in files if f.endswith(".sxm")]
                 dat_files  = [f for f in files if f.endswith(".dat")]
 
-                if len(sxm_files) != 1 or len(dat_files) != 1:
+                if len(dat_files) != 1:
                     messagebox.showerror(
                         "Error",
-                        "Please select exactly one .sxm file and one .dat file."
+                        "Please select exactly one .dat file (SXM is optional)."
                     )
                     return
 
-                file_path_sxm = sxm_files[0]
+                if len(sxm_files) > 1:
+                    messagebox.showerror(
+                        "Error",
+                        "Please select at most one .sxm file."
+                    )
+                    return
+
                 file_path_dat = dat_files[0]
+                file_path_sxm = sxm_files[0] if sxm_files else None
 
                 if measurement_type == "didv_spectrum":
                     img = save_dat_didv_spectrum(file_path_dat, file_path_sxm, labbook_folder, channel, cmap)
@@ -296,10 +303,7 @@ class LabbookApp:
                     messagebox.showinfo("Info", "No DAT files found.")
                     return
 
-                file_path_sxm = get_file_path_sxm(folder)
-                if not file_path_sxm:
-                    messagebox.showinfo("Info", "No SXM files found for context image.")
-                    return
+                file_path_sxm = get_file_path_sxm(folder)  # None if not found; image panel left blank
 
                 ref_type = self.prompt_reference_image_type()
                 if not ref_type:
