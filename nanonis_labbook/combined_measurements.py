@@ -135,7 +135,7 @@ def save_nc_measurement(files_path_list, labbook_folder):
     d2IdV2_norm = np.empty((no_of_files, no_of_datapoints))
 
     for i in range(len(specs)):
-        ax_Zspec.vlines(Zs[i], -20, 20, color=colors[i], ls='--')
+        ax_Zspec.vlines(Zs[i], -200, 200, color=colors[i], ls='--')
 
         bias[i] = specs[i].signals[SPEC_BIAS_CALC_CHANNEL]
         d2IdV2[i] = specs[i].signals[NC_SPEC_CHANNEL]
