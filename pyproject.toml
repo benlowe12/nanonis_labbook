@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nanonis-labbook"
+version = "0.1.0"
+description = "STM labbook tool for transferring Nanonis data into a logbook"
+requires-python = ">=3.8"
+dependencies = [
+    "numpy",
+    "matplotlib",
+    "matplotlib-scalebar",
+    "nanonispy",
+    "lmfit",
+    "Pillow",
+    "pyautogui",
+    "pygetwindow",
+    "pywin32",
+]
+
+[project.scripts]
+nanonis-labbook = "nanonis_labbook.main:run"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["nanonis_labbook*"]

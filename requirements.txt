@@ -1,0 +1,9 @@
+numpy
+matplotlib
+matplotlib-scalebar
+nanonispy
+lmfit
+Pillow
+pyautogui
+pygetwindow
+pywin32
