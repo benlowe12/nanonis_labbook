@@ -113,7 +113,7 @@ def save_nc_measurement(files_path_list, labbook_folder):
             files_with_z.append((Z, spec))
 
     # Sort bias spectra from smallest Z to largest Z
-    files_sorted = sorted(files_with_z)
+    files_sorted = sorted(files_with_z, key=lambda x: x[0])
     specs = [f[1] for f in files_sorted]
     Zs = [f[0] for f in files_sorted]
 
@@ -202,7 +202,7 @@ def save_kpfm_z_set(files_path_list, labbook_folder):
             Z = float(spec.header['Z (m)']) * 1e12
             files_with_z.append((Z, spec))
 
-    files_sorted = sorted(files_with_z)
+    files_sorted = sorted(files_with_z, key=lambda x: x[0])
     specs = [f[1] for f in files_sorted]
     Zs = np.array([f[0] for f in files_sorted])
     Zs -= Zs[0]
