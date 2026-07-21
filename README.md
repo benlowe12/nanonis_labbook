@@ -36,9 +36,9 @@ Before running for the first time, open `nanonis_labbook/config.py` and set the 
 # Channel names — must match your Nanonis channel names exactly
 TOPO_CHANNEL     = "Z"
 CURRENT_CHANNEL  = "Current"
-AFM_CHANNEL      = "Frequency_Shift"
-DIDV_MAP_CHANNEL = "Input_3"
-SPEC_DIDV_CHANNEL = "Input 3 (V)"
+AFM_CHANNEL      = "OC_M1_Freq._Shift"
+DIDV_MAP_CHANNEL = "LI_Demod_1_Y"
+SPEC_DIDV_CHANNEL = "LI Demod 1 Y (A)"
 # ... etc.
 
 # Application to paste images into
