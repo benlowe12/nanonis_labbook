@@ -26,6 +26,7 @@ cd nanonis-labbook
 pip install .
 ```
 
+Note: run pip install . from the top level "nanonis_labbook" folder, not the lower level folder. 
 ---
 
 ## Configuration
