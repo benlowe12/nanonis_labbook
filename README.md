@@ -19,14 +19,13 @@ Supported measurement types:
 ## Installation
 
 Clone the repository and install with pip:
-
+Note: run the pip command from the top level "nanonis-labook" folder not the lower level folder.
 ```bash
 git clone https://github.com/benlowe12/nanonis-labbook.git
 cd nanonis-labbook
 pip install .
 ```
 
-Note: run pip install . from the top level "nanonis_labbook" folder, not the lower level folder. 
 ---
 
 ## Configuration
