@@ -1,7 +1,7 @@
 numpy
 matplotlib
 matplotlib-scalebar
-git+https://github.com/benlowe12/nanonispy.git
+nanonispy2
 lmfit
 Pillow
 pyautogui
