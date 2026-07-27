@@ -9,7 +9,7 @@ from datetime import datetime
 
 import numpy as np
 import matplotlib.pyplot as plt
-import nanonispy
+import nanonispy2 as nanonispy
 from matplotlib_scalebar.scalebar import ScaleBar
 
 from .config import (
