@@ -26,7 +26,13 @@ git clone https://github.com/benlowe12/nanonis-labbook.git
 cd nanonis-labbook
 pip install -e .
 ```
-
+> **Note:** This project depends on a patched fork of `nanonispy`
+> (installed automatically from
+> [benlowe12/nanonispy](https://github.com/benlowe12/nanonispy) via
+> `requirements.txt`), since the version on PyPI has a known bug. Installing
+> it requires `git` to be available on your `PATH` — if you don't already
+> have it, install it from [git-scm.com](https://git-scm.com/downloads)
+> before running `pip install -e .`.
 ---
 
 ## Configuration
@@ -101,3 +107,4 @@ README.md
 - Windows (required for clipboard paste via `pywin32`)
 - Python 3.8+
 - See `requirements.txt` for Python dependencies
+- Git (required to install the `nanonispy` dependency, which is pulled from GitHub — see below)
