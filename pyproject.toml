@@ -11,7 +11,7 @@ dependencies = [
     "numpy",
     "matplotlib",
     "matplotlib-scalebar",
-    "nanonispy",
+    "nanonispy2",
     "lmfit",
     "Pillow",
     "pyautogui",
